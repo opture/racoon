@@ -1,0 +1,51 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/core-localstorage/core-localstorage.html">
+<polymer-element name="local-cache" attributes="cacheoptions cachestore">
+
+    <template>
+
+        <core-ajax 
+                   id="myCaller"
+                   url="{{cacheoptions.url}}"
+                   params='{{cacheoptions.params}}'
+                   handleas="json" on-core-response="{{ajaxResponse}}">
+        </core-ajax>
+        <core-localstorage id="storage" name="{{cacheoptions.name}}" value="{{items}}"></core-localstorage>
+    </template>
+    <script>
+        (function () {
+            'use strict';
+            
+            Polymer({
+                cachestore: {},
+                cacheoptions: null,
+                ready:function(){
+                    
+                    this.$.myCaller.go();
+                },
+                itemsChanged : function(){
+                    var self = this;
+
+
+                    
+                },
+                ajaxResponse: function (e, response) {
+                    var self = this;
+                    var tmpList = [];
+                    self.items = [];
+                    response.response.forEach(function (item, index) {
+                        tmpList.push(new self.cacheoptions.type(item));
+                    });
+                    self.items = tmpList;
+                    self.fire('cacheitem-loaded', { items: self.items, name: self.cacheoptions.name });
+                    console.log('Fires:' + 'cacheitem-loaded' + self.cacheoptions.name.toLowerCase());
+                    
+                    self.fire('core-signal', { data: self.items, name: 'cacheitem-loaded' + self.cacheoptions.name.toLowerCase() });
+                    //self.cachestore.addCacheItem(self.cacheoptions.name,self.items );
+                }
+
+            });
+
+        })();
+    </script>
+</polymer-element>

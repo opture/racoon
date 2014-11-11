@@ -1,0 +1,51 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<polymer-element name="nav-customer-name" attributes="customerid">
+    <template>
+        <style>
+            @-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+            .fadeIn {
+                -webkit-animation: fadein 0.45s; 
+            }
+        </style>
+        
+        <core-signals on-core-signal-cacheitem-loadedcustomers="{{customersLoaded}}"></core-signals>
+        <template if="{{customer.name}}">
+            <span  class="fadeIn">{{ customer.name }}</span>
+        </template>
+    </template>
+    <script>
+        (function () {
+            'use strict';
+
+            Polymer({
+                customerid: null,
+                customer: {},
+                ready: function (oldval, newval) {
+                    this.getCustomer();
+                },
+                customeridChanged:function(){
+                    this.getCustomer();
+                },
+                customersLoaded: function(e,items){
+                    this.getCustomer();
+                    //this.customers=items;
+                },
+                getCustomer: function () {
+                    var self = this;
+                    if (self.customerid === null) {this.customer={}; this.customer.name = 'Ej angiven'; return }
+                    var cacheCustomer = _.find(appCache.cachedItems['Customers'], function (item) {
+                        return item.id == self.customerid
+                    });
+                    self.customer = cacheCustomer;
+                    
+                }
+
+            });
+
+        })();
+    </script>
+</polymer-element>

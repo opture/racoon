@@ -1,0 +1,33 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<polymer-element name="user-name" attributes="userid">
+    <core-signals on-core-signal-cacheitem-loadedusers="{{userLoaded}}"></core-signals>
+    <template>
+        <span>{{ user.firstname }} {{user.lastname}}</span>
+    </template>
+    <script>
+        (function () {
+            'use strict';
+
+            Polymer({
+                userid: null,
+                user: {},
+                userLoaded: function(){
+                    console.log('Caught userloaded');
+                },
+                ready: function (oldval, newval) {
+                    this.getUser();
+                },
+                getUser:function(){
+                    var self = this;
+                    if (self.userid === null) { this.user.firstname = 'Användare saknas'; return }
+                    var cacheItem = _.find(appCache.getCacheItem('Users'), function (item) {
+                        return item.id == self.userid;
+                    });
+                    self.user = cacheItem;                    
+                }
+
+            });
+
+        })();
+    </script>
+</polymer-element>

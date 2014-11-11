@@ -1,0 +1,53 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<polymer-element name="user-input" attributes="userid label" center horizontal layout>
+    <template>
+    
+        <link rel="stylesheet" href="user-input.css">
+        <style>
+            core-field{
+
+            }
+            core-field label{
+                width: 12%;
+                min-width: 8em;
+                max-width: 10em;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            core-field input{
+                width: 88%;
+                border-bottom: 1px solid rgba(0,0,0,0.26) !important;
+            }
+            core-icon{min-width:24px;}
+        </style>
+        <core-field flex self-start icon="settings">
+            
+            <label>{{label}}</label>
+            <input type="text" value="{{user.value}}" />
+            
+        </core-field>
+
+
+    </template>
+    <script>
+        (function () {
+            'use strict';
+
+            Polymer({
+                userid: null,
+                label: null,
+                user: {},
+                ready: function () {
+                    var self = this;
+                    if (self.userid === null) { this.user.firstname = 'Användare'; this.user.lastname = " finns inte"; return }
+                    var cacheItem = _.find(appCache.getCacheItem('Users'), function (item) {
+                        return item.id == self.userid
+                    });
+                    self.user = cacheItem;
+                }
+
+            });
+
+        })();
+    </script>
+</polymer-element>

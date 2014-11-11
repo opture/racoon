@@ -1,0 +1,34 @@
+/* Shadow DOM CSS Cheat Sheet */
+/* http://robdodson.me/blog/2014/04/10/shadow-dom-css-cheat-sheet */
+
+/* styles for the custom element itself - lowest specificity */
+:host {
+  display: block;
+  color: #333;
+  font-size: 14px;
+}
+
+polyfill-next-selector { content: ':host > core-icon'; }
+::content > core-icon {
+  margin: 8px;
+}
+
+polyfill-next-selector { content: ':host input'; }
+::content input {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.26);
+  padding: 0;
+  margin: 0 4px;
+  color: #333;
+  font-size: 14px;
+}
+
+polyfill-next-selector { content: ':host input:focus'; }
+::content input:focus {
+  outline: none;
+}
+
+polyfill-next-selector { content: ':host input::placeholder'; }
+::content input::placeholder {
+  color: #b3b3b3;
+}

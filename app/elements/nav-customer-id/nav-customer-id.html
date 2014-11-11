@@ -1,0 +1,60 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-localstorage/core-localstorage.html">
+<polymer-element name="nav-customer-id" attributes="customerid" >
+    <template>
+        <link rel="stylesheet" href="nav-customer-id.css">
+        
+        
+        
+        <core-signals on-core-signal-cacheitem-loadedCustomers="{{customersLoaded}}"></core-signals>
+        
+        
+            <div class="card" layout>
+            <template if="{{customer}}">
+                <h3 class="fadeIn">{{ customer.name }}</h3>
+                <div layout horizontal class="fadeIn">
+                    <span flex></span>
+                    <div >
+                        <div>{{customer.address}}</div>
+                        <div style="white-space:nowrap">{{customer.zip}} {{customer.city}}</div>
+                        <br />
+                    </div>
+                </div>
+        </template>
+            </div>
+        
+
+
+    </template>
+    <script>
+        (function () {
+            'use strict';
+
+            Polymer({
+                customerid: null,
+                customer: {},
+                ready: function (oldval, newval) {
+                    this.getCustomer();
+                },
+                customeridChanged:function(){
+                    this.getCustomer();
+                },
+                customersLoaded: function(e,items){
+                    this.getCustomer();
+                    //this.customers=items;
+                },
+                getCustomer: function () {
+                    var self = this;
+                    if (self.customerid === null) { this.customer.name = 'Saknas'; return }
+                    var cacheCustomer = _.find(appCache.cachedItems['Customers'], function (item) {
+                        return item.id == self.customerid
+                    });
+                    self.customer = cacheCustomer;
+                    
+                }
+
+            });
+
+        })();
+    </script>
+</polymer-element>

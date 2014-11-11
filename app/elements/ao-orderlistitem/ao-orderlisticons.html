@@ -1,0 +1,67 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<polymer-element name="ao-orderlisticons" attributes="order">
+
+    <template>
+        <style>
+            core-icon {
+                margin-top: 3px;
+                opacity: 0.87;
+            }
+
+                core-icon[icon="lock"] {
+                    /*color: rgba(0,0,0,0.54);*/
+                    fill: currentColor;
+                }
+
+                core-icon[icon="warning"] {
+                    /*color: rgba(255,87,34,0.87);*/
+                    fill: currentColor;
+                }
+
+                core-icon[icon="maps:directions-bus"] {
+                    /*color: currentColor;*/
+                    opacity: 0.87;
+                    fill: currentColor;
+                }
+
+                core-icon[icon="editor:attach-money"] {
+                    /*color: rgba(37,155,36,0.87);*/
+                    fill: currentColor;
+                }
+        </style>
+
+        <span class="icons">
+            <template if="{{order.lockedById}}">
+                <core-icon on-tap="{{unlockOrder}}" title="{{order.lockedBy.firstname}} {{order.lockedBy.lastname}}" icon="lock"></core-icon>
+            </template>
+            <template if="{{!order.lockedById}}">
+                <p style="display:inline-block;width:24px;height:24px;padding:0;margin:0;">&nbsp;</p>
+            </template>
+            <template if="{{order.criticalDelivery}}">
+                <core-icon icon="warning" title="{{order.criticalDeliveryNote}}"></core-icon>
+            </template>
+            <template if="{{!order.criticalDelivery}}">
+                <p style="display:inline-block;width:24px;height:24px;padding:0;margin:0;">&nbsp;</p>
+            </template>
+            <core-icon on-tap="{{editdeliveryNote}}" icon="maps:directions-bus"></core-icon>
+            <core-icon on-tap="{{editInvoice}}" icon="editor:attach-money"></core-icon>
+        </span>
+
+    </template>
+
+
+    <script>
+        (function () {
+            'use strict';
+
+            Polymer({
+                // define element prototype here
+                order: {},
+                editdeliveryNote: function () { this.fire('tap-edit-deliverynote') },
+                unlockOrder: function () { this.fire('tap-unlock-order') },
+                editInvoice: function () { this.fire('tap-edit-invoice') }
+            });
+
+        })();
+    </script>
+</polymer-element>

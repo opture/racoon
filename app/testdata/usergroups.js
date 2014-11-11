@@ -1,0 +1,1 @@
+﻿{"usergroups":[{"id":25,"name":"Ågrenshuset Prepress IT AB","parentgroup":29,"active":true},{"id":26,"name":"Ågrenshuset Print Center AB","parentgroup":29,"active":true},{"id":27,"name":"Ågrenshuset Produktion AB","parentgroup":29,"active":true},{"id":28,"name":"Ågrenshuset Skylt & Dekor AB","parentgroup":29,"active":true}]}

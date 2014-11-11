@@ -1,0 +1,26 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<polymer-element name="resource-name" attributes="resourceid">
+    <template>
+        <span>{{ resource.name }}</span>
+    </template>
+    <script>
+        (function () {
+            'use strict';
+
+            Polymer({
+                resourceid: null,
+                resource: {},
+                ready: function (oldval, newval) {
+                    var self = this;
+                    if (self.resourceid === null) { this.resource.name = 'Resurs saknas'; return }
+                    var cacheItem = _.find(appCache.getCacheItem('ProductionResources'), function (item) {
+                        return item.id == self.resourceid
+                    });
+                    self.resource = cacheItem;
+                }
+
+            });
+
+        })();
+    </script>
+</polymer-element>

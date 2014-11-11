@@ -1,0 +1,175 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../date-format/date-format.html" />
+<polymer-element name="ao-order">
+    <template>
+        <link rel="stylesheet" href="ao-order.css">
+        <date-format></date-format>
+        <core-ajax auto
+                   url="http://ao2010.agrenshuset.se/api/orders"
+                   params='{"fromdate":"{{fromdate}}", "todate":"{{todate}}", "notdelivered":"{{notdelivered}}", "notinvoiced":"{{notinvoiced}}", "orderedByCustomer":"{{customerId}}" }'
+                   handleas="json" on-core-response="{{ajaxResponse}}">
+        </core-ajax>
+        
+        <div layout horizontal flex center-center style="padding:8px;">
+
+            <input type="date" value="{{fromdate}}">
+            <input type="date" value="{{todate}}" min="{{fromdate}}">
+            <input type="text" value="{{productionresourceId}}" placeholder="Maskin...">
+            <input type="text" value="{{companyId}}" placeholder="Bolag...">
+            <input type="text" value="{{productionWeek}}" placeholder="Vecka">
+            <input type="text" value="{{productionYear}}" placeholder="År">
+        </div>
+        <div layout horizontal flex center-center style="padding:8px;">
+        <input type="search" placeholder="Sök..." flex>
+        <nav-customer-chooser customerid="{{customerId}}" showaddress="false" flex></nav-customer-chooser>
+        </div>  
+        <div layout horizontal flex center-center>
+            <div style="display:inline-block;padding-right:12px;">
+                <span style="padding-right:12px;">Ej levererade</span>
+                <paper-checkbox checked="{{notdelivered}}"></paper-checkbox>
+            </div>
+            <div style="display:inline-block">
+                <span style="padding-right:12px;">Ej fakturerade</span>
+                <paper-checkbox checked="{{notinvoiced}}"></paper-checkbox>
+            </div>
+
+        </div>
+        <div layout horizontal flex center-center style="padding:8px;">
+            <core-icon-button layout icon="arrow-back" on-tap="{{prevPage}}"></core-icon-button>
+            <span flex></span>
+            <core-icon-button icon="arrow-forward" on-tap="{{nextPage}}"></core-icon-button>
+        </div>
+
+        <template if="{{!showTable}}">
+            <div style="font-size:50px;">Hämtar ordrar...</div>
+        </template>
+
+        <core-animated-pages hidden?="{{!showTable}}" id="pages" flex selected="0" transitions="cross-fade-all hero-transition">
+
+            <section vertical layout flex>
+                <div id="container" flex layout hero-p>
+                    <template repeat="{{order, i  in displayOrders}}">
+                        <ao-orderlistitem order="{{order}}" on-tap-edit-deliverynote="{{editDeliveryNote }}" on-tap-edit-order="{{selectView}}" class="orderItem {{order.statusClass}}" horizontal center layout hero-id="order-{{order.id}}" hero?="{{$.pages.selected === i + 1 || lastSelected === i + 1}}"></ao-orderlistitem>
+                    </template>
+                </div>
+            </section>
+
+            <template repeat="{{order,i in displayOrders}}">
+                <section vertical layout flex>
+
+                    <div class="orderView" flex vertical layout hero-id="order-{{order.id}}" hero?="{{$.pages.selected === i + 1 || $.pages.selected === 0}}">
+                        <paper-shadow z="2"></paper-shadow>
+
+                        <core-icon-button icon="close" on-tap="{{closeOrder}}" style="width:24px;"></core-icon-button>
+                        <ao-orderedit order="{{order}}" style="height:100%;"></ao-orderedit>
+
+                    </div>
+
+
+                </section>
+            </template>
+        </core-animated-pages><br />
+
+        
+    </template>
+
+    <script>
+
+        Polymer({
+            orders: [],
+            displayOrders: [],
+            currentPage: 0,
+            ordersToShow: 25,
+            ordersChanged: function (oldValue, newValue) {
+                this.displayOrders = this.orders.slice(this.ordersToShow * this.currentPage, this.ordersToShow * this.currentPage + this.ordersToShow);
+            },
+            currentPageChanged: function () {
+                this.displayOrders = this.orders.slice(this.ordersToShow * this.currentPage, this.ordersToShow * this.currentPage + this.ordersToShow);
+            },
+            nextPage: function () {
+                console.log('next page');
+                
+                this.currentPage += 1;
+                //this.currentPageChanged();
+            },
+            prevPage: function () {
+                console.log('next page');
+                if (this.currentPage > 0) {
+                    this.currentPage -= 1;
+                }
+                
+                //this.currentPageChanged();
+            },
+            selected: 0,
+            lastSelected: null,
+            fromdate: new Date().format('yyyy-mm-dd'),
+            todate: new Date().format('yyyy-mm-dd'),
+            notdelivered: false,
+            notinvoiced: false,
+            showTable: false,
+            fromdateChanged: function (oldValue, newValue) {
+                this.date = new Date(newValue).format('yyyy-mm-dd');  // how about some error handling too?
+                this.showTable = false;
+                this.orders = [];
+            },
+            todateChanged: function (oldValue, newValue) {
+                this.date = new Date(newValue).format('yyyy-mm-dd');  // how about some error handling too?
+                this.showTable = false;
+                this.orders = [];
+            },
+            notdeliveredChanged: function (oldValue, newValue) {
+                this.showTable = false;
+                this.orders = [];
+            },
+            notinvoicedChanged: function () {
+                this.showTable = false;
+                this.orders = [];
+            },
+            loaded: false,
+            ajaxResponse: function (event, response) {
+                var self = this;
+                self.job('newResponse',function () {
+                    self.handleResponse(response);
+                }, 1)
+                //this.$.orderTable.setAttribute('style', '');
+            },
+            handleResponse: function(response){
+                var self = this;
+                var retList = [];
+                _.forEach(response.response, function (item, index) {
+                    var newItem = new Workorder(item);
+                    retList.push(newItem);
+
+                });
+                this.orders = retList;
+                this.loaded = true;
+                //this.response = retList;
+                this.showTable = true;
+                this.currentPage = 0;
+                this.showTable = true;
+            },
+            selectView: function (e) {
+                console.log('clicked');
+                console.log(e.target.templateInstance.model);
+                //var i = e.target.templateInstance.model.order;
+                //selected = e.target.templateInstance.model.i;
+                this.$.pages.selected = e.target.templateInstance.model.i + 1;
+                e.target.templateInstance.model.order.loadOrderWorkflows();
+
+            },
+            closeOrder: function (e) {
+                this.lastSelected = this.$.pages.selected;
+                this.$.pages.selected = 0;
+            },
+            transitionend: function () {
+                if (lastSelected) {
+                    lastSelected = null;
+                }
+            },
+            editDeliveryNote: function (e) {
+                console.log('Edit deliveryNote');
+            }
+
+        });
+    </script>
+</polymer-element>

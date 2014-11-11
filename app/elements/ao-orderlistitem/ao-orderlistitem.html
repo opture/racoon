@@ -1,0 +1,35 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="ao-orderlisticons.html">
+<link rel="import" href="ao-orderedit.html">
+<link rel="import" href="../nav-customer-name/nav-customer-name.html" />
+<polymer-element name="ao-orderlistitem" attributes="order editOrder">
+    <template>
+
+        <link rel="stylesheet" href="ao-orderlistitem.css">
+
+        <div flex layout horizontal center>
+
+            <ao-orderlisticons class="icons" order="{{order}}" on-click-edit-deliverynote="{{editDeliveryNote}}"></ao-orderlisticons>
+            <span class="list-item" id="orderid" on-tap="{{editOrder}}">{{order.id}}</span>
+            <span class="list-item" id="description" on-tap="{{editOrder}}">{{order.description}}</span>
+            <span class="list-item" id="desireddelivery" on-tap="{{editOrder}}">{{order.formattedDelivery}}</span>
+            <resource-name class="list-item" on-tap="{{ editOrder }}" resourceid="{{order.productionResourceId}}"></resource-name>
+            <nav-customer-name class="list-item" customerid="{{order.customerId}}" on-tap="{{editorder}}"></nav-customer-name>
+            <user-name class="list-item" userid="{{order.quoteCreatorId}}" on-tap="{{editOrder}}"></user-name>
+            <user-name class="list-item" userid="{{order.createdById}}" on-tap="{{editOrder}}"></user-name>
+
+        </div>
+    </template>
+    <script>
+        (function () {
+            'use strict';
+
+            Polymer({
+                // define element prototype here
+                order: {},
+                editOrder: function () { this.fire('tap-edit-order') }
+            });
+
+        })();
+    </script>
+</polymer-element>

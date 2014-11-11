@@ -1,0 +1,199 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="ao-orderlisticons.html">
+<link rel="import" href="../../bower_components/core-input/core-input.html">
+<link rel="import" href="../../bower_components/core-field/core-field.html" />
+<link rel="import" href="../../bower_components/core-dropdown/core-dropdown.html">
+<polymer-element name="ao-orderedit" attributes="order editOrder">
+    <template>
+        <core-ajax id="ajaxWorkflows"
+                   url="http://ao2010.agrenshuset.se/api/orderworkflows"
+                   params='{"orderid":"{{order.id}}" }'
+                   handleas="json" on-core-response="{{wfsLoaded}}">
+        </core-ajax>
+        <link rel="stylesheet" href="ao-orderlistitem.css">
+        <style>
+            core-input {
+                border: 1px solid rgba(0,0,0,0.26);
+            }
+
+            core-field, user-input {
+                min-width: 250px;
+                padding: 8px;
+            }
+
+                core-field  label {
+                    min-width: 8em;
+                    max-width: 10em;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                core-field  input {
+                    border-bottom: 1px solid rgba(0,0,0,0.26) !important;
+                }
+
+            nav-customer {
+                box-sizing: border-box;
+                display: inline-block;
+            }
+
+            .grid {
+                position: absolute;
+                top: 40px;
+                left: 0;
+                bottom: 0;
+                right: 0;
+            }
+
+            .col-1-1 {
+                float: left;
+                -webkit-box-sizing: content-box;
+                box-sizing: content-box;
+                width: 100%;
+            }
+
+            .col-1-2 {
+                float: left;
+                -webkit-box-sizing: content-box;
+                box-sizing: content-box;
+                width: 50%;
+            }
+
+            .col-1-3 {
+                float: left;
+                -webkit-box-sizing: content-box;
+                box-sizing: content-box;
+                width: 33.3333333333333333333%;
+            }
+
+            .col-2-3 {
+                float: left;
+                -webkit-box-sizing: content-box;
+                box-sizing: content-box;
+                width: 66.666666666666666666667%;
+            }
+
+            @media only screen and (max-width: 641px) {
+                nav-customer {
+                    display: block;
+                    width: 100%;
+                }
+            }
+        </style>
+        <div layout horizontal wrap>
+
+            <core-field flex self-start>
+                <label>Företag</label>
+                <input placeholder="Företag..." value="{{order.usergroup.name}}" />
+            </core-field>
+
+            <core-field flex self-end>
+                <label>Maskin</label>
+                <input placeholder="maskin..." value="{{order.productionResource.name}}" />
+            </core-field>
+        </div>
+
+        <core-field flex self-start>
+            <label>Beskrivning</label>
+            <input placeholder="beskrivning..." value="{{order.description}}" />
+        </core-field>
+        <core-item icon="settings" on-tap="{{testCustomerID}}">Test</core-item>
+        
+
+
+
+        <div flex layout horizontal wrap>
+
+
+
+            <div center-justified style="width:300px;">
+                <nav-customer-id customerid="{{order.customerId}}" on-customerid-changed="{{customerIdChanged}}"  header="Kund" style="display:block;position:relative;"></nav-customer-id>
+                <nav-customer-id customerid="{{order.invoiceCustomerId}}" on-customerid-changed="{{invoiceCustomerIdChanged}}" header="Fakturakund" style="display:block;position:relative;"></nav-customer-id>
+                <user-input userid="{{order.quoteCreatorId}}" label="Offert/deb."></user-input>
+                <user-input userid="{{order.createdById}}" label="Skapad av"></user-input>
+                <user-input userid="{{order.workStartedById}}" label="Order start"></user-input>
+                <user-input userid="{{order.customerManagerId}}" label="Kundansvarig"></user-input>
+                <user-input userid="{{order.salesPersonId}}" label="Säljare"></user-input>
+
+            </div>
+
+            <div  style="padding:20px; min-width:300px;max-width:300px;">
+                <template repeat="{{owf in order.owfs}}">
+                    <div style="background-color:#03A9F4;color:white;font-size:14px;font-weight:bolder;padding:4px;margin-bottom:2px;" on-tap="{{ toggleWorkflow }}">{{owf.article.description}}</div>
+                    <div hidden >
+                        <template repeat="{{wff, i in owf.workflow.workflowfields}}">
+                            <template if="{{wff.typeId!=7}}">
+                                <core-field>
+                                    <label flex one self-start>{{wff.label}} ({{wff.typeId}})</label>
+                                    <input self-end flex three type="text" value="{{wff.displayValue}}" />
+                                </core-field>
+                            </template>
+                            <template if="{{wff.typeId==7}}">
+                                <core-field>
+                                    <label flex one self-start>{{wff.label}} ({{wff.typeId}})</label>
+                                    <div self-end flex three contenteditable="true" style="white-space:pre-wrap;bordeR:1px solid rgba(0,0,0,0.14)">{{wff.displayValue}}</div>
+                                </core-field>
+                            </template>                            
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+
+        <div>
+
+            <div flex layout horizontal wrap left-justified>
+
+                <span flex self-stretch></span>
+
+
+
+            </div>
+
+
+        </div>
+    </template>
+    <script>
+        (function () {
+            'use strict';
+
+            Polymer({
+                // define element prototype here
+                order: {},
+                workflows: [],
+                testCustomerID: function(){
+                    console.log('Change customer');
+                    
+                    this.order.customerId = 248;
+                    this.order.invoiceCustomerId = 247;
+                },
+                invoiceCustomerIdChanged: function(e,detail){
+
+                },
+                customerIdChanged: function(e,detail){
+                    
+                },
+                toggleWorkflow: function (a, b, c) {
+                    if ($(c).next()[0].hasAttribute('hidden')) {
+                        $(c).next().removeAttr('hidden');
+                    } else {
+                        $(c).next().attr('hidden','');
+                    }
+                    
+                },
+                editOrder: function () { this.fire('tap-edit-order') },
+                ready: function () {
+                },
+                attached: function () {
+                },
+
+                wfsLoaded: function (event, response) {
+                    console.log('wfs loaded');
+                    console.log(response.response);
+                }
+            });
+
+        })();
+    </script>
+</polymer-element>

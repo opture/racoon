@@ -1,0 +1,121 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>AO - Ågrenshuset</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <!-- build:css styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild-->
+    <script src="bower_components/platform/platform.js"></script>
+    <!-- build:vulcanized elements/elements.vulcanized.html -->
+    <link rel="import" href="elements/elements.html">
+    <!-- endbuild-->
+    <script src="scripts/lib/lib.js"></script>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
+    
+    <script src="scripts/models/basemodels/basemodels.js"></script>
+    <style>
+        @media handheld, only screen and (max-width: 768px) {
+            core-icon-button span {
+                display: none;
+            }
+        }
+
+        @media handheld, only screen and (max-width: 321px) {
+            core-toolbar span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body fullbleed vertical layout unresolved>
+    <!-- Route controller. -->
+
+    <div id="apa"></div>
+    
+    <template is="auto-binding">
+        
+        <ao-cache id="AppCache"></ao-cache>
+        <flatiron-director route="{{route}}" autohash></flatiron-director>
+        <core-ajax id="ajax" auto url="{{selectedPage.page.url}}"
+                   handleas="document" on-core-response="{{onResponse}}">
+        </core-ajax>
+        <core-scaffold drawerwidth="164px" responsivewidth="768px">
+            <core-header-panel navigation flex mode="seamed">
+                <core-toolbar>AO</core-toolbar>
+                <core-menu valueattr="hash" selected="{{route}}" selectedmodel="{{selectedPage}}">
+                    <template repeat="{{page in pages}}">
+                        <core-item label="{{page.name}}" icon="{{page.icon}}" hash="{{page.hash}}">
+                            <a href="{{page.url}}"></a>
+                        </core-item>
+                    </template>
+                </core-menu>
+            </core-header-panel>
+            <div flex tool>
+
+                <core-animated-pages valueattr="hash" selected="{{route}}"
+                                     transitions="slide-from-right">
+
+                    <template repeat="{{page in pages}}">
+                        <core-selector hash="{{page.hash}}" horizontal>
+
+                            <template repeat="{{menuItem in page.tools}}">
+                                <core-icon-button icon="{{menuItem.icon}}"><span>{{menuItem.menuname}}</span></core-icon-button>
+                            </template>
+                        </core-selector>
+                    </template>
+                </core-animated-pages>
+
+            </div>
+            <div class="apa" id="mainlay" layout horizontal center-center fit>
+                <core-animated-pages id="main" valueattr="hash" selected="{{route}}"
+                                     transitions="slide-from-bottom">
+                    <template repeat="{{page in pages}}">
+                        <section hash="{{page.hash}}" layout vertical center>
+                            <div class="content">{{page.content}}</div>
+                        </section>
+                    </template>
+                </core-animated-pages>
+            </div>
+        </core-scaffold>
+    </template>
+
+    <!-- build:js scripts/app.js -->
+
+    
+    <script src="scripts/app.js"></script>
+
+    <script>
+        var DEFAULT_ROUTE = 'one';
+        var template = document.querySelector('template[is="auto-binding"]');
+        template.pages = [
+          { name: 'Order', icon: 'assignment', hash: 'orders', url: 'pages/order-table.html', tools: [{ menuname: 'Ny Order', icon: 'add-box' }, { menuname: 'Gammal Order', icon: 'add-box' }] },
+          { name: 'Offert', icon: 'drive-chart', hash: 'quotes', url: 'pages/quotes-page.html', tools: [{ menuname: 'Ny Offert', icon: 'add-box' }] },
+          { name: 'Kunder', icon: 'account-child', hash: 'customers', url: 'pages/customers-page.html', tools: [{ menuname: 'Ny Kund', icon: 'add-box' }] },
+          { name: 'Resurser', icon: 'extension', hash: 'productionresources', url: 'pages/resources-page.html', tools: [{ menuname: 'Ny Resurs', icon: 'add-box' }] },
+          { name: 'Planering', icon: 'alarm', hash: 'productionplanning', url: 'pages/productionplanning-page.html', tools: [{ menuname: 'Ny Planeringspost', icon: 'add-box' }] },
+          { name: 'Inställningar', icon: 'settings', hash: 'settings', url: 'pages/settings-page.html', tools: [{ menuname: 'Ny Order', icon: 'add-box' }] },
+        ];
+        template.addEventListener('template-bound', function (e) {
+            // Use URL hash for initial route. Otherwise, use the first page.
+            this.route = this.route || DEFAULT_ROUTE;
+        });
+        template.onResponse = function (e, detail, sender) {
+            var article = detail.response;
+
+            var pages = document.querySelector('#main');
+            console.log(article.toString());
+            this.injectBoundHTML(article.querySelector('body').innerHTML,
+                                 pages.selectedItem.firstElementChild);
+        };
+    </script>
+    <!-- endbuild-->
+
+
+</body>
+</html>

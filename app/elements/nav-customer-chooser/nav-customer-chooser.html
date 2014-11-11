@@ -1,0 +1,141 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/core-dropdown/core-dropdown.html">
+<link rel="import" href="../../bower_components/core-menu/core-menu.html">
+<link rel="import" href="../../bower_components/core-a11y-keys/core-a11y-keys.html">
+<polymer-element name="nav-customer-chooser" attributes="customerid showaddress">
+  <template>
+    <link rel="stylesheet" href="nav-customer-chooser.css">
+    <div relative>
+    <template if="{{!showSearch}}"
+      <nav-customer-name hidden?="{{noth()}}" on-tap="{{toggleSearch}}" customerid="{{customerid}}" id="customerName1"></nav-customer-name>
+      <nav-customer-id hidden?="{{noth()}}" on-tap="{{toggleSearch}}" customerid="{{customerid}}" id="customerName1"></nav-customer-id>
+    </template>
+      <input type="text" hidden?="{{!showSearch}}" id="customerName" placeholder="Kund..."  value="{{searchtext}}" on-keydown="{{handleKeys}}" on-keyup="{{searchCustomer}}"/>
+
+
+    <core-dropdown id="selectCustomer"  valign="bottom"  opened="{{resultOpened}}" autoFocusDisabled="true" >
+    
+    <core-menu id="resultsMenu" >
+
+      <template repeat="{{cust in searchResult}}">
+      <core-item>
+        <nav-customer-id customerid="{{cust.id}}" on-tap="{{customerTap}}"></nav-customer-id>
+        </core-item>
+      </template>
+      </core-menu>
+    </core-dropdown>
+    
+</div>
+  </template>
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        showaddress: false,
+        searchResult: [],
+        customerid: null,
+        showSearch: false,
+        displayAddress: function(){
+          return this.showaddress && !this.showSearch;
+        },
+        ready:function(){
+            this.showSearch = this.customerid == null ? true : false;
+        },
+        searchtext: '',
+        preventSearch: false,
+        
+        itemsToShow: 50,
+        
+        selectedName: '',
+        toggleSearch: function(){
+          this.showSearch=!this.showSearch;
+        },
+        customeridChanged: function(){
+            console.log('customerid changed');
+        },
+        resultOpened: false,
+        handleKeys:function(e){
+          //e.preventDefault();
+          var self = this;
+          var item =  self.$.resultsMenu.selectedIndex || 0;
+
+          //Left or up moves up in searchresult.
+          if (e.keyCode == 37 || e.keyCode == 38){ //left or up arrow
+            //move up in searchresult.
+            console.log('moveup');
+            console.log(item);
+            self.$.resultsMenu.selected = item - 1;
+            return;
+          }
+
+          //Right or down key moves down in searchresult.
+          if (e.keyCode == 39 || e.keyCode == 40){ //right or down arrow
+            //move down in searchresult.
+            console.log('move down');
+            console.log(item);
+            self.$.resultsMenu.selected = item + 1; 
+            return;
+          }
+
+          //Enter or tab selects the highlighted value.
+          if (e.keyCode==9 || e.keyCode==13){
+            console.log('select');
+            console.log(self.searchResult[item]);
+            if (self.searchResult[item]=== undefined) { 
+              self.changeCustomerId(null)
+            } else {
+              self.changeCustomerId(self.searchResult[item].id);
+            }
+            return;
+          }
+
+          //Escape return to previous state.
+          if (e.keyCode == 27){
+            self.$.resultsMenu.selected = -1;
+            self.searchtext = '';
+          
+            self.searchResult = [];
+          
+            self.isHidden = true;
+            e.preventDefault();
+            return;
+          }
+
+          //alfnumerics trigger search
+          return;
+        },
+        searchCustomer: function(e){
+          var self = this;
+          var customers = appCache.cachedItems.Customers;
+          
+          var result = _.filter(customers, function(item, index){
+            return item.name.toLowerCase().indexOf(self.searchtext.toLowerCase()) >=0;
+          });
+
+          self.searchResult = result.slice(0, self.itemsToShow);
+          if (self.searchResult.length > 0 ) {
+            self.resultOpened = true;
+          }
+        },
+        customerTap: function(e,detail,c){
+          this.changeCustomerId(c.customerid);
+        },
+        changeCustomerId: function(customerId){
+          
+          var self = this;
+
+          self.$.resultsMenu.selected = -1;
+          self.customerid = customerId;
+          self.searchtext = '';
+          
+          self.searchResult = [];
+          
+          self.showSearch = false;
+        },
+      });
+
+    })();
+  </script>
+</polymer-element>

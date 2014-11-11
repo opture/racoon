@@ -1,0 +1,121 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="local-cache/local-cache.html" />
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html" />
+<link rel="import" href="../../bower_components/core-overlay/core-overlay.html" />
+<polymer-element name="ao-cache" attributes="">
+    <template>
+        <template repeat="{{grej in cacheItems}}">
+            <local-cache cacheoptions="{{grej}}" cacheStore="{{appCache}}" on-cacheitem-loaded="{{ cacheItemLoaded }}"></local-cache>
+        </template>
+    </template>
+    <script src="../../scripts/models/basemodels/basemodels.js"></script>
+    <script>
+    (function() {
+        'use strict';
+        var appCache = {};
+        var Cache = function() {
+            var self = this;
+
+            //Add item or collection to cache.
+            self.addCacheItem = function(key, data) {
+                self.cachedItems[key] = data;
+            };
+
+            //Get item or collection from cache
+            self.getCacheItem = function(key) {
+                return self.cachedItems[key];
+            };
+
+            //Execute when cacheitems are added-
+            self.cachedItems = {};
+        };
+
+        window.appCache = new Cache();
+        //window.appCache = new Cache();
+
+        Polymer({
+            itemsLoaded: 0,
+            appCache: {},
+            ready: function() {
+              this.appCache = window.appCache;
+              
+            },
+            cacheItemLoaded: function(e) {
+                //Add to items loaded and check if all are loaded.
+                var self = this;
+
+                //this.$.progress.value += 100 / this.cacheItems.length;
+                self.itemsLoaded += 1;
+                
+                if (self.itemsLoaded == self.cacheItems.length) {
+                    //Everything loaded, remove the overlay.
+                    console.log('cache init ready');
+                    console.log(self.itemsLoaded + ' items loaded');
+                    //this.$.overlay.opened = false;
+                }
+                
+                //Add items to global cache.
+
+                //values[e.detail.name] = e.detail.items;
+                console.log(e.detail.name);
+               self.appCache.addCacheItem(e.detail.name, e.detail.items);
+                //Notify that cache is ready, this should happens once per application start.
+                //self.fire('core-signal', { name: 'cache' + e.detail.name.toLowerCase(), data:null });
+            },
+            //Items to creat ajax caching for.
+            cacheItems: [
+              {
+                  id: 'CustomerAjaxCache',
+                  url: 'http://ao2010.agrenshuset.se/api/customers',
+                  params: '{"getAll":"true"}',
+                  name: 'Customers',
+                  type: Customer
+              }, {
+                  id: 'UserAjaxCache',
+                  url: 'http://ao2010.agrenshuset.se/api/users',
+                  name: 'Users',
+                  type: User
+              }, {
+                  id: 'UsergroupsAjaxCache',
+                  url: 'http://ao2010.agrenshuset.se/api/usergroups',
+                  name: 'Usergroups',
+                  type: Usergroup
+              }, {
+                  id: 'ProductsAjaxCache',
+                  url: 'http://ao2010.agrenshuset.se/api/articles',
+                  params: '{"isStructured":"true"}',
+                  name: 'Products',
+                  type: Product
+              }, {
+                  id: 'ArticlesAjaxCache',
+                  url: 'http://ao2010.agrenshuset.se/api/articles',
+                  name: 'Articles',
+                  type: Article
+              }, {
+                  id: 'WorkflowsAjaxCache',
+                  url: 'http://ao2010.agrenshuset.se/api/workflows',
+                  name: 'Workflows',
+                  type: Workflow
+              }, {
+                  id: 'WorkflowfielddatasAjaxCache',
+                  url: 'http://ao2010.agrenshuset.se/api/workflowfielddatas',
+                  name: 'Workflowfielddatas',
+                  type: Workflowfielddata
+              }, {
+                  id: 'CertificationsAjaxCache',
+                  url: 'http://ao2010.agrenshuset.se/api/certifications',
+                  name: 'Certifications',
+                  type: Certification
+              }, {
+                  id: 'ProductionResourcesAjaxCache',
+                  url: 'http://ao2010.agrenshuset.se/api/productionmachines',
+                  name: 'ProductionResources',
+                  type: ProductionResource
+              }, 
+            ]
+
+        });
+
+    })();
+    </script>
+</polymer-element>

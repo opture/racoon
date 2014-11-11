@@ -1,0 +1,52 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../nav-customer-id/nav-customer-id.html" />
+<polymer-element name="nav-customer-list" attributes="customers">
+  <template>
+      <link rel="stylesheet" href="nav-customer-list.css">
+      <input id="searchText" on-blur="{{searchCustomer }}" value="{{searchText}}" placeholder="Sök..."/><br />
+      <div flex horizontal wrap around-justified layout>
+          <template repeat="{{customer in displayCustomers}}">
+
+              <nav-customer-id customerid="{{customer.id}}" unresolved></nav-customer-id>
+          </template>
+      </div>
+</template>
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+          customers: null,
+          currentPage:0,
+          itemsToShow:25,
+          displayCustomers: [],
+          searchText:'',
+          ready: function () {
+              this.displayCustomers = appCache.getCacheItem('Customers').slice(this.currentPage * this.itemsToShow, this.currentPage * this.itemsToShow + this.itemsToShow);
+          },
+          currentPageChange: function () {
+              this.displayCustomers = appCache.getCacheItem('Customers').slice(this.currentPage*this.itemsToShow, this.currentPage*this.itemstoshow + this.itemsToShow);
+          },
+          nextPage: function () {
+
+              this.currentPage += 1;
+          },
+          prevPage: function () {
+              if (this.currentPage <= 0) { return}
+              this.currentPage -= 1;
+          },
+          searchCustomer: function () {
+              var self = this;
+              var tmpList = [];
+
+              tmpList = _.filter(appCache.getCacheItem('Customers'), function (item, index) {
+                  return item.name.toLowerCase().indexOf(self.searchText.toLowerCase()) >= 0;
+              });
+              this.displayCustomers = tmpList.slice(this.currentPage * this.itemsToShow, this.currentPage * this.itemsToShow + this.itemsToShow);
+          }
+
+      });
+
+    })();
+  </script>
+</polymer-element>

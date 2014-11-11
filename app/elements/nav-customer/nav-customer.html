@@ -1,0 +1,28 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<polymer-element name="nav-customer" attributes="customer header">
+  <template>
+    <link rel="stylesheet" href="nav-customer.css">
+      <h2>{{header}}</h2>
+      <core-field>
+          <label>Beskrivning</label>
+          
+          <input type="text" placeholder="Kund..." value="{{ customer.name }}">
+          <p>
+              {{customer.address}}<br />
+              {{customer.zip}} {{customer.city}}
+          </p>
+      </core-field>
+    
+  </template>
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        customer: null
+      });
+
+    })();
+  </script>
+</polymer-element>

@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<bundle xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://vswebessentials.com/schemas/v1/bundle.xsd">
+  <settings>
+    <!--Determines if the bundle file should be automatically optimized after creation/update.-->
+    <minify>true</minify>
+    <!--Determin whether to generate/re-generate this bundle on building the solution.-->
+    <runOnBuild>false</runOnBuild>
+    <!--Specifies a custom subfolder to save files to. By default, compiled output will be placed in the same folder and nested under the original file.-->
+    <outputDirectory />
+  </settings>
+  <!--The order of the <file> elements determines the order of the files in the bundle.-->
+  <files>
+    <file>/scripts/models/basemodels/article.js</file>
+    <file>/scripts/models/basemodels/certification.js</file>
+    <file>/scripts/models/basemodels/customer.js</file>
+    <file>/scripts/models/basemodels/customercontact.js</file>
+    <file>/scripts/models/basemodels/orderlistitem.js</file>
+    <file>/scripts/models/basemodels/ordersavedata.js</file>
+    <file>/scripts/models/basemodels/orderworkflow.js</file>
+    <file>/scripts/models/basemodels/paper.js</file>
+    <file>/scripts/models/basemodels/product.js</file>
+    <file>/scripts/models/basemodels/productionresource.js</file>
+    <file>/scripts/models/basemodels/user.js</file>
+    <file>/scripts/models/basemodels/usergroup.js</file>
+    <file>/scripts/models/basemodels/workflow.js</file>
+    <file>/scripts/models/basemodels/workflowfield.js</file>
+    <file>/scripts/models/basemodels/workflowfielddata.js</file>
+    <file>/scripts/models/basemodels/workorder.js</file>
+  </files>
+</bundle>

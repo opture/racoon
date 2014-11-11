@@ -1,0 +1,43 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html">
+  <polymer-element name="ao-toolbar" attributes="order">
+    <template>
+      <div layout horizontal flex center-center style="padding:8px;">
+        <core-icon-button   icon="arrow-back" on-tap="{{prevPage}}"></core-icon-button>
+        <span flex></span>
+        <input type="date" value="{{fromdate}}" />
+        <input type="date" value="{{todate}}" min="{{fromdate}}" />
+        <span flex></span>
+        <core-icon-button  icon="arrow-forward" on-tap="{{nextPage}}"></core-icon-button>
+      </div>
+    </template>
+
+
+    <script>
+      (function () {
+      'use strict';
+
+      Polymer({
+          // define element prototype here
+      });
+      })();
+    </script>
+  </polymer-element>
+
+  </template>
+
+
+  <script>
+    (function () {
+    'use strict';
+
+    Polymer({
+    // define element prototype here
+    order: {},
+    editdeliveryNote: function () { this.fire('tap-edit-deliverynote') },
+    unlockOrder: function () { this.fire('tap-unlock-order') },
+    editInvoice: function () { this.fire('tap-edit-invoice') }
+    });
+
+    })();
+  </script>
+  </polymer-element>

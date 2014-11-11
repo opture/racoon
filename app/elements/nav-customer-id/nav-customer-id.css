@@ -1,0 +1,36 @@
+/* Shadow DOM CSS Cheat Sheet */
+/* http://robdodson.me/blog/2014/04/10/shadow-dom-css-cheat-sheet */
+/* styles for the custom element itself - lowest specificity */
+
+:host {} .card {
+    box-sizing: content-box;
+    -webkit-column-break-inside: avoid;
+    position: relative;
+    display: inline-block;
+    width: 250px;
+    background-color: none;
+    padding: 8px;
+    font-size: 11px;
+    margin: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.26);
+    border-radius: 4px;
+    cursor: default;
+    color: currentColor;
+    overflow: hidden;
+}
+.card h3 {
+    font-weight: bolder;
+    padding: 2px 0;
+    margin: 0;
+}
+@-webkit-keyframes fadein {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+.fadeIn {
+    -webkit-animation: fadein 0.45s;
+}
